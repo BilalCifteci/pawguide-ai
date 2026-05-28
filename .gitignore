@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node.js
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Docker volumes (local only)
+docker/nginx/ssl/
+
+# ML Models
+backend/ml_models/*.joblib
+backend/ml_models/*.pkl
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code (AI assistant config - not needed in repo)
+.claude/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
