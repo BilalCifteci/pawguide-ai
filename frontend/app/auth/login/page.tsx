@@ -12,15 +12,25 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [attempts, setAttempts] = useState(0);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) return;
     setLoading(true);
     setError("");
     const result = await signIn("credentials", { email, password, redirect: false });
     if (result?.error) {
-      setError("E-posta veya sifre hatali.");
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      if (newAttempts >= 5) {
+        setError("Cok fazla basarisiz deneme. Hesabiniz gecici olarak kilitlendi, lutfen bekleyin.");
+      } else {
+        setError(`E-posta veya sifre hatali. (${newAttempts}/5 deneme)`);
+      }
       setLoading(false);
     } else {
+      setAttempts(0);
       router.push("/dashboard");
     }
   };

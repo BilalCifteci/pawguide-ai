@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import axios from "axios";
+import { PasswordStrength } from "@/components/PasswordStrength";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -71,27 +72,41 @@ export default function RegisterPage() {
       <div className="bg-white rounded-3xl shadow-xl shadow-gray-100 p-8 border border-gray-100">
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {[
-            { label: "Ad Soyad", name: "full_name", type: "text", placeholder: "Ahmet Yılmaz" },
-            { label: "E-posta", name: "email", type: "email", placeholder: "ornek@email.com" },
-            { label: "Şifre", name: "password", type: "password", placeholder: "En az 8 karakter" },
-            { label: "Şifre Tekrar", name: "confirmPassword", type: "password", placeholder: "••••••••" },
-          ].map((field) => (
-            <div key={field.name}>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-                {field.label}
-              </label>
-              <input
-                type={field.type}
-                name={field.name}
-                required
-                value={(form as any)[field.name]}
-                onChange={handleChange}
-                placeholder={field.placeholder}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-gray-50 hover:bg-white transition"
-              />
-            </div>
-          ))}
+          {/* Ad Soyad */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Ad Soyad</label>
+            <input type="text" name="full_name" required value={form.full_name}
+              onChange={handleChange} placeholder="Ahmet Yilmaz"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-gray-50 hover:bg-white transition" />
+          </div>
+          {/* E-posta */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">E-posta</label>
+            <input type="email" name="email" required value={form.email}
+              onChange={handleChange} placeholder="ornek@email.com"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-gray-50 hover:bg-white transition" />
+          </div>
+          {/* Sifre + guc gostergesi */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Sifre</label>
+            <input type="password" name="password" required value={form.password}
+              onChange={handleChange} placeholder="En az 8 karakter"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-gray-50 hover:bg-white transition" />
+            <PasswordStrength password={form.password} />
+          </div>
+          {/* Sifre tekrar */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Sifre Tekrar</label>
+            <input type="password" name="confirmPassword" required value={form.confirmPassword}
+              onChange={handleChange} placeholder="••••••••"
+              className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-gray-50 hover:bg-white transition ${
+                form.confirmPassword && form.password !== form.confirmPassword
+                  ? "border-red-300 bg-red-50" : "border-gray-200"
+              }`} />
+            {form.confirmPassword && form.password !== form.confirmPassword && (
+              <p className="text-xs text-red-500 mt-1">Sifreler eslesmiyor</p>
+            )}
+          </div>
 
           {error && (
             <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>

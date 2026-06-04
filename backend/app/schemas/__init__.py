@@ -2,16 +2,33 @@ import uuid
 from datetime import datetime, date
 from typing import Any
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 # ─── Auth ─────────────────────────────────────────────────
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=8)
-    full_name: str = Field(min_length=2)
-    phone: str | None = None
+    password: str = Field(min_length=8, max_length=128)
+    full_name: str = Field(min_length=2, max_length=100)
+    phone: str | None = Field(default=None, max_length=20, pattern=r"^[\d\+\-\(\)\s]*$")
+
+    @field_validator("full_name")
+    @classmethod
+    def sanitize_name(cls, v: str) -> str:
+        import re
+        v = v.strip()
+        # Remove HTML/script tags
+        v = re.sub(r"<[^>]+>", "", v)
+        # Only allow letters, spaces, hyphens, apostrophes
+        if not re.match(r"^[\w\s\-\'\.]+$", v, re.UNICODE):
+            raise ValueError("Ad soyad gecersiz karakter iceriyor")
+        return v
+
+    @field_validator("email")
+    @classmethod
+    def lowercase_email(cls, v: str) -> str:
+        return v.lower().strip()
 
 
 class UserResponse(BaseModel):

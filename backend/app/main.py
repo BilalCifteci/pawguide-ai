@@ -8,6 +8,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.logging import setup_logging
+from app.core.security_headers import SecurityHeadersMiddleware
 from app.db.session import engine, get_db
 from app.db.base import Base
 from app.db.seed_foods import seed_food_products
@@ -43,6 +44,8 @@ app = FastAPI(
 )
 
 # ─── Middleware ───────────────────────────────────────────
+app.add_middleware(SecurityHeadersMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
