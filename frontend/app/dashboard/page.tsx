@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
@@ -27,9 +27,9 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">
-            Merhaba, {session?.user?.name?.split(" ")[0]} 👋
+            Merhaba, {session?.user?.name?.split(" ")[0]} ğŸ‘‹
           </h1>
-          <p className="text-gray-500 mt-1">Evcil hayvanlarınızın sağlık durumu</p>
+          <p className="text-gray-500 mt-1">Evcil hayvanlarÄ±nÄ±zÄ±n saÄŸlÄ±k durumu</p>
         </div>
 
         {pets.length === 0 ? (
@@ -39,7 +39,7 @@ export default function DashboardPage() {
             {/* Pets */}
             <div className="lg:col-span-1 space-y-4">
               <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                Hayvanlarım
+                HayvanlarÄ±m
               </h2>
               {pets.map((pet: any) => (
                 <PetCard key={pet.id} pet={pet} />
@@ -69,7 +69,7 @@ function HealthAlertsSection({ petId }: { petId: string }) {
   return (
     <div>
       <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-        Sağlık Uyarıları
+        SaÄŸlÄ±k UyarÄ±larÄ±
       </h2>
       <div className="space-y-3">
         {alerts.map((alert: any, i: number) => (
@@ -83,10 +83,10 @@ function HealthAlertsSection({ petId }: { petId: string }) {
 function EmptyState() {
   return (
     <div className="text-center py-24">
-      <div className="text-6xl mb-4">🐾</div>
-      <h2 className="text-xl font-semibold text-gray-800">Henüz hayvan eklemediniz</h2>
+      <div className="text-6xl mb-4">ğŸ¾</div>
+      <h2 className="text-xl font-semibold text-gray-800">HenÃ¼z hayvan eklemediniz</h2>
       <p className="text-gray-500 mt-2">
-        İlk evcil hayvanınızı ekleyerek başlayın.
+        Ä°lk evcil hayvanÄ±nÄ±zÄ± ekleyerek baÅŸlayÄ±n.
       </p>
       <a
         href="/pets/new"
@@ -97,4 +97,3 @@ function EmptyState() {
     </div>
   );
 }
-# dashboard
