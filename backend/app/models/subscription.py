@@ -39,6 +39,9 @@ class Subscription(Base, UUIDMixin, TimestampMixin):
     reorder_threshold_days: Mapped[int] = mapped_column(Integer, default=7, nullable=False)
     current_stock_g: Mapped[float] = mapped_column(Float, nullable=False)
     delivery_address: Mapped[str] = mapped_column(String(500), nullable=False)
+    frequency: Mapped[str] = mapped_column(String(20), default="monthly", nullable=False)  # weekly / monthly
+    daily_amount_g: Mapped[float | None] = mapped_column(Float, nullable=True)
+    price_per_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
 
     user: Mapped["User"] = relationship("User", back_populates="subscriptions")
 

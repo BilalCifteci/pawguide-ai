@@ -94,7 +94,7 @@ export default function NewPetPage() {
         medical_conditions: form.medical_conditions || undefined,
       }),
     onSuccess: (res) => {
-      router.push(`/pets/${res.data.id}`);
+      router.push(`/subscription/new?petId=${res.data.id}`);
     },
     onError: (e: any) => {
       setError(e.message ?? "Bir hata oluştu.");

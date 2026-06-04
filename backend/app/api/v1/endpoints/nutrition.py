@@ -19,6 +19,7 @@ from app.schemas.nutrition import (
     FoodScoringRequest,
     FoodScoringResponse,
     FoodRecommendationResponse,
+    SubscriptionEstimate,
 )
 
 router = APIRouter()
@@ -162,11 +163,49 @@ async def recommend_foods(
             has_allergen=score["has_allergen"],
             calorie_coverage_percent=score["calorie_coverage_percent"],
             protein_coverage_percent=score["protein_coverage_percent"],
+            price_per_kg=product.price_per_kg,
         ))
 
     # Sort: safe products first, then by score descending
     recommendations.sort(key=lambda r: (r.has_allergen, -r.overall_score))
     return recommendations
+
+
+@router.get("/estimate", response_model=SubscriptionEstimate)
+async def estimate_subscription(
+    pet_id: uuid.UUID,
+    product_id: uuid.UUID,
+    user_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+):
+    """Calculate subscription cost and amounts for a pet + product combo."""
+    pet = await _get_pet_or_404(pet_id, user_id, db)
+
+    stmt = select(FoodProduct).where(FoodProduct.id == product_id)
+    result = await db.execute(stmt)
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Food product not found.")
+
+    # Daily amount: 3% of body weight
+    daily_amount_g = round(pet.weight_kg * 30, 1)
+    weekly_amount_g = round(daily_amount_g * 7, 1)
+    monthly_amount_g = round(daily_amount_g * 30, 1)
+
+    price = product.price_per_kg or 200.0
+    daily_cost = round((daily_amount_g / 1000) * price, 2)
+    weekly_cost = round((weekly_amount_g / 1000) * price, 2)
+    monthly_cost = round((monthly_amount_g / 1000) * price, 2)
+
+    return SubscriptionEstimate(
+        daily_amount_g=daily_amount_g,
+        weekly_amount_g=weekly_amount_g,
+        monthly_amount_g=monthly_amount_g,
+        daily_cost_tl=daily_cost,
+        weekly_cost_tl=weekly_cost,
+        monthly_cost_tl=monthly_cost,
+        price_per_kg=price,
+    )
 
 
 @router.get("/plans/{pet_id}", response_model=list[NutritionPlanResponse])

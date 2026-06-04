@@ -39,6 +39,7 @@ class FoodProduct(Base, UUIDMixin, TimestampMixin):
     is_authentic: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     manufacturer_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    price_per_kg: Mapped[float | None] = mapped_column(Float, nullable=True)  # TL cinsinden
 
     def __repr__(self) -> str:
         return f"<FoodProduct {self.brand} – {self.name}>"

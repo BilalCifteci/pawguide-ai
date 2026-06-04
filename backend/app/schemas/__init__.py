@@ -118,6 +118,7 @@ class FoodRecommendationResponse(BaseModel):
     has_allergen: bool
     calorie_coverage_percent: float
     protein_coverage_percent: float
+    price_per_kg: float | None
 
     model_config = {"from_attributes": True}
 
@@ -210,6 +211,9 @@ class SubscriptionCreate(BaseModel):
     current_stock_g: float = Field(gt=0)
     delivery_address: str
     reorder_threshold_days: int = 7
+    frequency: str = "monthly"       # weekly / monthly
+    daily_amount_g: float | None = None
+    price_per_kg: float | None = None
 
 
 class SubscriptionResponse(BaseModel):
@@ -222,6 +226,19 @@ class SubscriptionResponse(BaseModel):
     reorder_threshold_days: int
     current_stock_g: float
     days_until_empty: float | None
+    frequency: str
+    daily_amount_g: float | None
+    price_per_kg: float | None
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class SubscriptionEstimate(BaseModel):
+    daily_amount_g: float
+    weekly_amount_g: float
+    monthly_amount_g: float
+    daily_cost_tl: float
+    weekly_cost_tl: float
+    monthly_cost_tl: float
+    price_per_kg: float

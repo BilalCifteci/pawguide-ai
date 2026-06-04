@@ -53,6 +53,8 @@ export const nutritionApi = {
   getPlans: (petId: string) => apiClient.get(`/nutrition/plans/${petId}`),
   getRecommendations: (petId: string) =>
     apiClient.get(`/nutrition/recommend/${petId}`),
+  getEstimate: (petId: string, productId: string) =>
+    apiClient.get(`/nutrition/estimate`, { params: { pet_id: petId, product_id: productId } }),
 };
 
 export const analyticsApi = {
