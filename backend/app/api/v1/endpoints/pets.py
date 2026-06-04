@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import get_current_user_id
 from app.db.session import get_db
 from app.models.pet import Pet
 from app.models.weight_log import WeightLog
@@ -14,7 +15,7 @@ router = APIRouter()
 
 @router.get("/", response_model=list[PetResponse])
 async def list_pets(
-    user_id: uuid.UUID,  # In production: comes from JWT dependency
+    user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     stmt = select(Pet).where(Pet.owner_id == user_id)
@@ -25,7 +26,7 @@ async def list_pets(
 @router.post("/", response_model=PetResponse, status_code=status.HTTP_201_CREATED)
 async def create_pet(
     payload: PetCreate,
-    user_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     pet = Pet(**payload.model_dump(), owner_id=user_id)
@@ -38,18 +39,17 @@ async def create_pet(
 @router.get("/{pet_id}", response_model=PetResponse)
 async def get_pet(
     pet_id: uuid.UUID,
-    user_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    pet = await _get_pet_or_404(pet_id, user_id, db)
-    return pet
+    return await _get_pet_or_404(pet_id, user_id, db)
 
 
 @router.patch("/{pet_id}", response_model=PetResponse)
 async def update_pet(
     pet_id: uuid.UUID,
     payload: PetUpdate,
-    user_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     pet = await _get_pet_or_404(pet_id, user_id, db)
@@ -64,20 +64,18 @@ async def update_pet(
 @router.delete("/{pet_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_pet(
     pet_id: uuid.UUID,
-    user_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     pet = await _get_pet_or_404(pet_id, user_id, db)
     await db.delete(pet)
 
 
-# ─── Weight Logs ──────────────────────────────────────────
-
 @router.post("/{pet_id}/weight-logs", response_model=WeightLogResponse, status_code=status.HTTP_201_CREATED)
 async def log_weight(
     pet_id: uuid.UUID,
     payload: WeightLogCreate,
-    user_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     await _get_pet_or_404(pet_id, user_id, db)
@@ -91,8 +89,8 @@ async def log_weight(
 @router.get("/{pet_id}/weight-logs", response_model=list[WeightLogResponse])
 async def get_weight_logs(
     pet_id: uuid.UUID,
-    user_id: uuid.UUID,
     limit: int = 90,
+    user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     await _get_pet_or_404(pet_id, user_id, db)
@@ -106,9 +104,7 @@ async def get_weight_logs(
     return result.scalars().all()
 
 
-async def _get_pet_or_404(
-    pet_id: uuid.UUID, user_id: uuid.UUID, db: AsyncSession
-) -> Pet:
+async def _get_pet_or_404(pet_id: uuid.UUID, user_id: uuid.UUID, db: AsyncSession) -> Pet:
     stmt = select(Pet).where(Pet.id == pet_id, Pet.owner_id == user_id)
     result = await db.execute(stmt)
     pet = result.scalar_one_or_none()

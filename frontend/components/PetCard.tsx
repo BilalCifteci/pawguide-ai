@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { getBreedLabel, getActivityLabel } from "@/lib/petLabels";
 
 interface Pet {
   id: string;
@@ -13,13 +14,6 @@ interface Pet {
   sex?: string;
 }
 
-const ACTIVITY_LABELS: Record<string, string> = {
-  sedentary: "Hareketsiz",
-  low: "Az aktif",
-  moderate: "Orta",
-  high: "Aktif",
-  very_high: "Cok aktif",
-};
 
 const SPECIES_BG: Record<string, string> = {
   dog: "from-amber-100 to-orange-100",
@@ -29,7 +23,8 @@ const SPECIES_BG: Record<string, string> = {
 export function PetCard({ pet }: { pet: Pet }) {
   const emoji = pet.species === "dog" ? "🐕" : "🐈";
   const bg = SPECIES_BG[pet.species] ?? "from-gray-100 to-gray-100";
-  const activityLabel = ACTIVITY_LABELS[pet.activity_level] ?? pet.activity_level;
+  const activityLabel = getActivityLabel(pet.activity_level);
+  const breedLabel = getBreedLabel(pet.breed) || (pet.species === "dog" ? "Kopek" : "Kedi");
 
   return (
     <Link href={`/pets/${pet.id}`}>
@@ -47,7 +42,7 @@ export function PetCard({ pet }: { pet: Pet }) {
                 <span className="text-xs text-gray-400">{pet.sex === "male" ? "♂" : "♀"}</span>
               )}
             </div>
-            <p className="text-sm text-gray-500 truncate">{pet.breed ?? (pet.species === "dog" ? "Kopek" : "Kedi")}</p>
+            <p className="text-sm text-gray-500 truncate">{breedLabel}</p>
           </div>
 
           <svg className="w-4 h-4 text-gray-300 group-hover:text-amber-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

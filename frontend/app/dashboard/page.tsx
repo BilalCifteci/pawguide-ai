@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { petsApi, analyticsApi } from "@/lib/api";
@@ -8,10 +9,13 @@ import { AlertBanner } from "@/components/AlertBanner";
 import { WeightChart } from "@/components/WeightChart";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getBreedLabel } from "@/lib/petLabels";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   if (status === "unauthenticated") redirect("/auth/login");
+
+  const [activePetId, setActivePetId] = useState<string | null>(null);
 
   const { data: pets = [] } = useQuery<any[]>({
     queryKey: ["pets"],
@@ -19,6 +23,7 @@ export default function DashboardPage() {
     enabled: !!session,
   });
 
+  const selectedPetId = activePetId ?? pets[0]?.id ?? null;
   const firstName = session?.user?.name?.split(" ")[0] ?? "";
 
   return (
@@ -26,37 +31,31 @@ export default function DashboardPage() {
       {/* Hero */}
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Merhaba, {firstName}! 👋
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Merhaba, {firstName}! 👋</h1>
           <p className="text-gray-500 mt-1">
             {pets.length > 0
               ? `${pets.length} tuklu dostunuzun sagligi takip altinda`
               : "Hadi ilk tuklu dostunuzu ekleyelim!"}
           </p>
         </div>
-        <Link
-          href="/pets/new"
-          className="flex items-center gap-2 px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-white rounded-xl text-sm font-semibold shadow-sm shadow-amber-200 transition-all hover:shadow-md flex-shrink-0"
-        >
-          <span>+</span>
-          Hayvan Ekle
+        <Link href="/pets/new"
+          className="flex items-center gap-2 px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-white rounded-xl text-sm font-bold shadow-sm shadow-amber-200 transition flex-shrink-0">
+          + Hayvan Ekle
         </Link>
       </div>
 
-      {pets.length === 0 ? (
-        <EmptyState />
-      ) : (
+      {pets.length === 0 ? <EmptyState /> : (
         <div className="space-y-8">
-          {/* Stats bar */}
+          {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard emoji="🐾" label="Toplam Hayvan" value={pets.length} color="amber" />
+            <StatCard emoji="🐾" label="Toplam" value={pets.length} color="amber" />
             <StatCard emoji="🐕" label="Kopek" value={pets.filter((p: any) => p.species === "dog").length} color="orange" />
             <StatCard emoji="🐈" label="Kedi" value={pets.filter((p: any) => p.species === "cat").length} color="violet" />
-            <StatCard emoji="✅" label="Takip Edilen" value={pets.length} color="green" />
+            <StatCard emoji="✅" label="Takipte" value={pets.length} color="green" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Pet list */}
             <div className="lg:col-span-1 space-y-3">
               <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Hayvanlarim</h2>
               {pets.map((pet: any) => (
@@ -64,9 +63,29 @@ export default function DashboardPage() {
               ))}
             </div>
 
+            {/* Charts & alerts */}
             <div className="lg:col-span-2 space-y-5">
-              {pets[0] && <WeightChart petId={pets[0].id} />}
-              {pets[0] && <HealthAlertsSection petId={pets[0].id} />}
+              {/* Pet selector for charts */}
+              {pets.length > 1 && (
+                <div className="flex gap-2 flex-wrap">
+                  {pets.map((pet: any) => (
+                    <button key={pet.id} onClick={() => setActivePetId(pet.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition ${
+                        selectedPetId === pet.id
+                          ? "bg-amber-400 text-white border-amber-400"
+                          : "bg-white text-gray-600 border-gray-200 hover:border-amber-300"
+                      }`}>
+                      <span>{pet.species === "dog" ? "🐕" : "🐈"}</span>
+                      {pet.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {selectedPetId && <WeightChart petId={selectedPetId} />}
+              {selectedPetId && <HealthAlertsSection petId={selectedPetId} />}
+
+              {/* Quick links */}
               <div className="grid grid-cols-2 gap-3">
                 <QuickLink href="/nutrition" emoji="🍽️" title="Mama Onerileri" desc="Hayvanina ozel onerimiz var" color="amber" />
                 <QuickLink href="/supply-chain" emoji="📦" title="Urun Dogrula" desc="Mama orijinalligini kontrol et" color="blue" />
@@ -118,9 +137,7 @@ function HealthAlertsSection({ petId }: { petId: string }) {
   return (
     <div className="space-y-3">
       <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Saglik Uyarilari</h2>
-      {alerts.map((alert: any, i: number) => (
-        <AlertBanner key={i} alert={alert} />
-      ))}
+      {alerts.map((alert: any, i: number) => <AlertBanner key={i} alert={alert} />)}
     </div>
   );
 }
@@ -128,17 +145,11 @@ function HealthAlertsSection({ petId }: { petId: string }) {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
-      <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-5xl mb-6 shadow-sm">
-        🐾
-      </div>
+      <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-5xl mb-6 shadow-sm">🐾</div>
       <h2 className="text-xl font-bold text-gray-800">Henuz hayvan eklemediniz</h2>
-      <p className="text-gray-400 mt-2 max-w-xs text-sm">
-        Tuklu dostunuzun sagligini takip etmek icin hemen ekleyin.
-      </p>
-      <Link
-        href="/pets/new"
-        className="mt-6 px-6 py-3 bg-amber-400 hover:bg-amber-500 text-white rounded-xl font-semibold shadow-sm shadow-amber-200 transition-all hover:shadow-md"
-      >
+      <p className="text-gray-400 mt-2 max-w-xs text-sm">Tuklu dostunuzun sagligini takip etmek icin hemen ekleyin.</p>
+      <Link href="/pets/new"
+        className="mt-6 px-6 py-3 bg-amber-400 hover:bg-amber-500 text-white rounded-xl font-bold shadow-sm shadow-amber-200 transition">
         🐾 Ilk Hayvanini Ekle
       </Link>
     </div>

@@ -132,11 +132,15 @@ export function AppLayout({ children, backHref, backLabel }: {
             <p className="text-xs text-slate-500 truncate">{session?.user?.email}</p>
           </div>
         </div>
+        <Link href="/profile" onClick={() => setMobileOpen(false)}
+          className="w-full text-xs text-slate-400 hover:text-white py-2 px-3 rounded-xl hover:bg-white/10 transition text-left flex items-center gap-2 mb-1">
+          <span>👤</span> Profilim
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/auth/login" })}
           className="w-full text-xs text-slate-500 hover:text-red-400 py-2 px-3 rounded-xl hover:bg-red-400/10 transition text-left flex items-center gap-2"
         >
-          <span>→</span> Cikis Yap
+          <span>🚪</span> Cikis Yap
         </button>
       </div>
     </div>
@@ -203,10 +207,46 @@ export function AppLayout({ children, backHref, backLabel }: {
           </div>
         </header>
 
-        <main className="flex-1">
+        <main className="flex-1 pb-20 lg:pb-0">
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-gray-100 shadow-lg">
+        <div className="flex items-center justify-around px-2 py-2">
+          {[
+            { href: "/dashboard", icon: "🏠", label: "Ana Sayfa" },
+            { href: "/nutrition", icon: "🍽️", label: "Mama" },
+            { href: "/pets/new", icon: "➕", label: "Ekle", special: true },
+            { href: "/supply-chain", icon: "📦", label: "Dogrula" },
+            { href: "/subscription", icon: "🔄", label: "Abonelik" },
+          ].map((item) => {
+            const isActive = pathname === item.href;
+            if (item.special) {
+              return (
+                <Link key={item.href} href={item.href}
+                  className="flex flex-col items-center -mt-4">
+                  <div className="w-12 h-12 rounded-full bg-amber-400 hover:bg-amber-500 flex items-center justify-center text-white text-xl shadow-md shadow-amber-200 transition">
+                    {item.icon}
+                  </div>
+                  <span className="text-[10px] text-gray-400 mt-1">{item.label}</span>
+                </Link>
+              );
+            }
+            return (
+              <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
+                className={`flex flex-col items-center px-2 py-1 rounded-xl transition min-w-0 ${
+                  isActive ? "text-amber-500" : "text-gray-400 hover:text-gray-600"
+                }`}>
+                <span className="text-xl">{item.icon}</span>
+                <span className="text-[10px] mt-0.5 font-medium truncate">{item.label}</span>
+                {isActive && <div className="w-1 h-1 rounded-full bg-amber-400 mt-0.5" />}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

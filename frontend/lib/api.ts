@@ -15,10 +15,6 @@ apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) =>
   if (session?.accessToken) {
     config.headers.Authorization = `Bearer ${session.accessToken}`;
   }
-  // Attach user_id as query param (backend expects it until JWT dep is wired)
-  if (session?.userId && config.params !== false) {
-    config.params = { ...config.params, user_id: session.userId };
-  }
   return config;
 });
 
@@ -71,6 +67,12 @@ export const supplyChainApi = {
     apiClient.post("/supply-chain/verify/barcode", { barcode }),
   verifyQR: (payload: string) =>
     apiClient.post("/supply-chain/verify/qr", { barcode: payload }),
+};
+
+export const healthRecordsApi = {
+  list: (petId: string) => apiClient.get(`/pets/${petId}/health-records`),
+  create: (petId: string, data: unknown) => apiClient.post(`/pets/${petId}/health-records`, data),
+  delete: (petId: string, recordId: string) => apiClient.delete(`/pets/${petId}/health-records/${recordId}`),
 };
 
 export const subscriptionsApi = {

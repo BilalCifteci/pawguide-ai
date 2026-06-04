@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import get_current_user_id
 from app.db.session import get_db
 from app.models.subscription import Subscription, SubscriptionStatus
 from app.schemas.subscription import SubscriptionResponse, SubscriptionCreate
@@ -11,7 +12,10 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[SubscriptionResponse])
-async def list_subscriptions(user_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def list_subscriptions(
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
     stmt = select(Subscription).where(Subscription.user_id == user_id)
     result = await db.execute(stmt)
     return result.scalars().all()
@@ -20,7 +24,7 @@ async def list_subscriptions(user_id: uuid.UUID, db: AsyncSession = Depends(get_
 @router.post("/", response_model=SubscriptionResponse, status_code=201)
 async def create_subscription(
     payload: SubscriptionCreate,
-    user_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     sub = Subscription(**payload.model_dump(), user_id=user_id)
@@ -31,7 +35,11 @@ async def create_subscription(
 
 
 @router.patch("/{sub_id}/pause", response_model=SubscriptionResponse)
-async def pause_subscription(sub_id: uuid.UUID, user_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def pause_subscription(
+    sub_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
     sub = await _get_sub_or_404(sub_id, user_id, db)
     sub.status = SubscriptionStatus.PAUSED
     await db.flush()
@@ -40,7 +48,11 @@ async def pause_subscription(sub_id: uuid.UUID, user_id: uuid.UUID, db: AsyncSes
 
 
 @router.patch("/{sub_id}/resume", response_model=SubscriptionResponse)
-async def resume_subscription(sub_id: uuid.UUID, user_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def resume_subscription(
+    sub_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
     sub = await _get_sub_or_404(sub_id, user_id, db)
     sub.status = SubscriptionStatus.ACTIVE
     await db.flush()
