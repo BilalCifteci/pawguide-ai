@@ -80,6 +80,8 @@ export const subscriptionsApi = {
   create: (data: unknown) => apiClient.post("/subscriptions/", data),
   pause: (id: string) => apiClient.patch(`/subscriptions/${id}/pause`),
   resume: (id: string) => apiClient.patch(`/subscriptions/${id}/resume`),
+  delete: (id: string) => apiClient.delete(`/subscriptions/${id}`),
+  getActiveFood: (petId: string) => apiClient.get(`/subscriptions/active-food/${petId}`),
 };
 
 export default apiClient;

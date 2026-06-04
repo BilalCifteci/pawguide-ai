@@ -11,6 +11,7 @@ import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/AppLayout";
 import Link from "next/link";
 import { getBreedLabel, getActivityLabel, ACTIVITY_LABELS } from "@/lib/petLabels";
+import { subscriptionsApi } from "@/lib/api";
 
 export default function PetDetailPage({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
@@ -31,6 +32,12 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
   const { data: requirements } = useQuery({
     queryKey: ["nutrition-requirements", petId],
     queryFn: () => nutritionApi.getRequirements(petId).then((r) => r.data),
+    enabled: !!pet,
+  });
+
+  const { data: activeFood } = useQuery({
+    queryKey: ["active-food", petId],
+    queryFn: () => subscriptionsApi.getActiveFood(petId).then(r => r.data),
     enabled: !!pet,
   });
 
@@ -122,6 +129,11 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
             <WeightChart petId={petId} />
           </div>
 
+          {/* Mama Karti */}
+          <div className="lg:col-span-2">
+            <FoodCard petId={petId} activeFood={activeFood} />
+          </div>
+
           {/* Diet Analysis */}
           <div className="lg:col-span-2">
             <DietCard petId={petId} petName={pet.name} />
@@ -186,6 +198,50 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
       </div>
     </div>
     </AppLayout>
+  );
+}
+
+function FoodCard({ petId, activeFood }: { petId: string; activeFood: any }) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">🍽️</span>
+          <h2 className="font-bold text-gray-900">Mama</h2>
+        </div>
+        <Link href={`/pets/${petId}/food`}
+          className="px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition">
+          Mama Seç / Karşılaştır →
+        </Link>
+      </div>
+
+      {activeFood ? (
+        <div className="flex items-center gap-4 bg-amber-50 rounded-xl p-4 border border-amber-100">
+          <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl flex-shrink-0">🥘</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-gray-400 font-semibold">{activeFood.brand}</p>
+            <p className="font-bold text-gray-900 truncate">{activeFood.name}</p>
+            <div className="flex gap-3 mt-1 text-xs text-gray-500">
+              {activeFood.daily_amount_g && <span>📦 Günlük {activeFood.daily_amount_g}g</span>}
+              {activeFood.price_per_kg && activeFood.daily_amount_g && (
+                <span>💰 {((activeFood.daily_amount_g / 1000) * activeFood.price_per_kg).toFixed(2)} ₺/gün</span>
+              )}
+            </div>
+          </div>
+          <span className="text-xs font-bold bg-amber-200 text-amber-800 px-2 py-1 rounded-full flex-shrink-0">
+            {activeFood.frequency === "monthly" ? "Aylık" : "Haftalık"}
+          </span>
+        </div>
+      ) : (
+        <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-dashed border-gray-200">
+          <div className="text-2xl">🔍</div>
+          <div>
+            <p className="font-semibold text-gray-700 text-sm">Henüz mama seçilmedi</p>
+            <p className="text-xs text-gray-400">{activeFood === null ? "Hayvanınız için en uygun mamayı bulmak için tıklayın" : "Yükleniyor..."}</p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
