@@ -59,13 +59,16 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="text-4xl mb-2">🐾</div>
-          <h1 className="text-2xl font-bold text-gray-900">Hesap Oluştur</h1>
-          <p className="text-gray-500 text-sm mt-1">PawGuide AI'ya katılın</p>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-200 mb-4">
+          <span className="text-3xl">🐾</span>
         </div>
+        <h1 className="text-2xl font-bold text-gray-900">Hesap Olustur</h1>
+        <p className="text-gray-500 text-sm mt-1">PawGuide AI'ya katil</p>
+      </div>
+      <div className="bg-white rounded-3xl shadow-xl shadow-gray-100 p-8 border border-gray-100">
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {[
@@ -75,7 +78,7 @@ export default function RegisterPage() {
             { label: "Şifre Tekrar", name: "confirmPassword", type: "password", placeholder: "••••••••" },
           ].map((field) => (
             <div key={field.name}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
                 {field.label}
               </label>
               <input
@@ -85,7 +88,7 @@ export default function RegisterPage() {
                 value={(form as any)[field.name]}
                 onChange={handleChange}
                 placeholder={field.placeholder}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-gray-50 hover:bg-white transition"
               />
             </div>
           ))}
@@ -97,18 +100,19 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 transition"
+            className="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-xl font-semibold hover:from-amber-500 hover:to-orange-600 disabled:opacity-50 transition-all shadow-sm shadow-amber-200 hover:shadow-md mt-2"
           >
-            {loading ? "Kaydediliyor..." : "Kayıt Ol"}
+            {loading ? "Kaydediliyor..." : "Kayit Ol"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Zaten hesabınız var mı?{" "}
-          <Link href="/auth/login" className="text-indigo-600 hover:underline font-medium">
-            Giriş yap
+        <p className="text-center text-sm text-gray-500 mt-5">
+          Zaten hesabiniz var mi?{" "}
+          <Link href="/auth/login" className="text-amber-500 hover:text-amber-600 font-semibold">
+            Giris yap
           </Link>
         </p>
+        </div>
       </div>
     </div>
   );

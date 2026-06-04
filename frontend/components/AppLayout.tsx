@@ -31,18 +31,25 @@ export function AppLayout({ children, backHref, backLabel }: {
   });
 
   const SidebarContent = () => (
-    <>
+    <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-6 py-5 border-b border-gray-100">
-        <Link href="/dashboard" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-          <span className="text-2xl">🐾</span>
-          <span className="font-bold text-gray-900 text-lg">PawGuide</span>
-          <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">AI</span>
+      <div className="px-5 py-6">
+        <Link href="/dashboard" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
+          <div className="w-9 h-9 rounded-xl bg-amber-400 flex items-center justify-center text-lg shadow-sm">
+            🐾
+          </div>
+          <div>
+            <span className="font-bold text-white text-base tracking-tight">PawGuide</span>
+            <span className="ml-1.5 text-[10px] font-semibold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded-md">AI</span>
+          </div>
         </Link>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto scrollbar-thin">
+        <p className="px-3 py-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+          Menu
+        </p>
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -50,26 +57,29 @@ export function AppLayout({ children, backHref, backLabel }: {
               key={item.href}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 isActive
-                  ? "bg-indigo-50 text-indigo-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-amber-400/15 text-amber-400"
+                  : "text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
             >
-              <span>{item.icon}</span>
+              <span className="text-base">{item.icon}</span>
               {item.label}
+              {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-400" />}
             </Link>
           );
         })}
 
         {/* Pets section */}
         <div className="pt-4">
-          <div className="flex items-center justify-between px-3 mb-1">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Hayvanlarim</span>
+          <div className="flex items-center justify-between px-3 mb-1.5">
+            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+              Hayvanlarim
+            </p>
             <Link
               href="/pets/new"
               onClick={() => setMobileOpen(false)}
-              className="text-indigo-500 hover:text-indigo-700 text-lg leading-none"
+              className="w-5 h-5 rounded-md bg-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/20 transition text-xs font-bold"
               title="Hayvan Ekle"
             >
               +
@@ -80,9 +90,10 @@ export function AppLayout({ children, backHref, backLabel }: {
             <Link
               href="/pets/new"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-gray-50 transition"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-500 hover:bg-white/5 hover:text-slate-300 transition border border-dashed border-slate-700 mx-1 mt-1"
             >
-              <span>+</span> Hayvan ekle
+              <span className="text-base">+</span>
+              <span>Hayvan ekle</span>
             </Link>
           ) : (
             pets.map((pet: any) => {
@@ -92,14 +103,17 @@ export function AppLayout({ children, backHref, backLabel }: {
                   key={pet.id}
                   href={`/pets/${pet.id}`}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-indigo-50 text-indigo-700"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-amber-400/15 text-amber-400"
+                      : "text-slate-400 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <span>{pet.species === "dog" ? "🐕" : "🐈"}</span>
+                  <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-sm">
+                    {pet.species === "dog" ? "🐕" : "🐈"}
+                  </div>
                   <span className="truncate">{pet.name}</span>
+                  <span className="ml-auto text-xs text-slate-600">{pet.weight_kg}kg</span>
                 </Link>
               );
             })
@@ -108,91 +122,87 @@ export function AppLayout({ children, backHref, backLabel }: {
       </nav>
 
       {/* User */}
-      <div className="px-4 py-4 border-t border-gray-100">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-sm">
+      <div className="px-3 py-4 border-t border-slate-800">
+        <div className="flex items-center gap-3 px-2 mb-2">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
             {session?.user?.name?.[0]?.toUpperCase() ?? "?"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{session?.user?.name}</p>
-            <p className="text-xs text-gray-400 truncate">{session?.user?.email}</p>
+            <p className="text-sm font-semibold text-white truncate">{session?.user?.name}</p>
+            <p className="text-xs text-slate-500 truncate">{session?.user?.email}</p>
           </div>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/auth/login" })}
-          className="w-full text-xs text-gray-500 hover:text-red-600 py-1.5 rounded-lg hover:bg-gray-50 transition text-left px-2"
+          className="w-full text-xs text-slate-500 hover:text-red-400 py-2 px-3 rounded-xl hover:bg-red-400/10 transition text-left flex items-center gap-2"
         >
-          Cikis Yap
+          <span>→</span> Cikis Yap
         </button>
       </div>
-    </>
+    </div>
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-stone-50">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 min-h-screen bg-white border-r border-gray-200 flex-col fixed top-0 left-0 h-full z-30">
+      <aside className="hidden lg:flex w-60 min-h-screen bg-slate-900 flex-col fixed top-0 left-0 h-full z-30">
         <SidebarContent />
       </aside>
 
       {/* Mobile Overlay */}
       {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
       )}
 
       {/* Mobile Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 flex flex-col z-50 transform transition-transform duration-200 lg:hidden ${
+      <aside className={`fixed top-0 left-0 h-full w-60 bg-slate-900 flex flex-col z-50 transform transition-transform duration-300 ease-out lg:hidden ${
         mobileOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
         <SidebarContent />
       </aside>
 
       {/* Main */}
-      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
-          {/* Mobile menu button */}
+        <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100 px-4 sm:px-6 py-3.5 flex items-center gap-3 sticky top-0 z-20">
           <button
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition"
+            className="lg:hidden p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
 
-          {/* Back button */}
-          {backHref && (
+          {backHref ? (
             <button
               onClick={() => router.push(backHref)}
-              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition"
+              className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition font-medium"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               {backLabel ?? "Geri"}
             </button>
-          )}
-
-          {/* Page title */}
-          {!backHref && (
-            <span className="text-sm text-gray-400">
-              {NAV_ITEMS.find(n => pathname.startsWith(n.href))?.label ?? "PawGuide AI"}
-            </span>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-gray-700">
+                {NAV_ITEMS.find(n => pathname.startsWith(n.href))?.icon}
+              </span>
+              <span className="text-sm font-semibold text-gray-700">
+                {NAV_ITEMS.find(n => pathname.startsWith(n.href))?.label ?? "PawGuide AI"}
+              </span>
+            </div>
           )}
 
           <div className="flex-1" />
 
-          {/* User avatar mobile */}
-          <div className="lg:hidden w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-sm">
+          {/* Mobile user */}
+          <div className="lg:hidden w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
             {session?.user?.name?.[0]?.toUpperCase() ?? "?"}
           </div>
         </header>
 
-        {/* Page content */}
         <main className="flex-1">
           {children}
         </main>
