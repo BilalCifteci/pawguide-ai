@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,9 +8,10 @@ import { petsApi } from "@/lib/api";
 import { useState } from "react";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Ana Sayfa", icon: "ğŸ " },
-  { href: "/supply-chain", label: "ÃœrÃ¼n DoÄŸrula", icon: "ğŸ“¦" },
-  { href: "/subscription", label: "Abonelik", icon: "ğŸ”„" },
+  { href: "/dashboard", label: "Ana Sayfa", icon: "🏠" },
+  { href: "/nutrition", label: "Mama Onerileri", icon: "🍽️" },
+  { href: "/supply-chain", label: "Urun Dogrula", icon: "📦" },
+  { href: "/subscription", label: "Abonelik", icon: "🔄" },
 ];
 
 export function AppLayout({ children, backHref, backLabel }: {
@@ -34,7 +35,7 @@ export function AppLayout({ children, backHref, backLabel }: {
       {/* Logo */}
       <div className="px-6 py-5 border-b border-gray-100">
         <Link href="/dashboard" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-          <span className="text-2xl">ğŸ¾</span>
+          <span className="text-2xl">🐾</span>
           <span className="font-bold text-gray-900 text-lg">PawGuide</span>
           <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">AI</span>
         </Link>
@@ -64,7 +65,7 @@ export function AppLayout({ children, backHref, backLabel }: {
         {/* Pets section */}
         <div className="pt-4">
           <div className="flex items-center justify-between px-3 mb-1">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">HayvanlarÄ±m</span>
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Hayvanlarim</span>
             <Link
               href="/pets/new"
               onClick={() => setMobileOpen(false)}
@@ -81,7 +82,7 @@ export function AppLayout({ children, backHref, backLabel }: {
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-gray-50 transition"
             >
-              <span>â•</span> Hayvan ekle
+              <span>+</span> Hayvan ekle
             </Link>
           ) : (
             pets.map((pet: any) => {
@@ -97,7 +98,7 @@ export function AppLayout({ children, backHref, backLabel }: {
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
-                  <span>{pet.species === "dog" ? "ğŸ•" : "ğŸˆ"}</span>
+                  <span>{pet.species === "dog" ? "🐕" : "🐈"}</span>
                   <span className="truncate">{pet.name}</span>
                 </Link>
               );
@@ -121,7 +122,7 @@ export function AppLayout({ children, backHref, backLabel }: {
           onClick={() => signOut({ callbackUrl: "/auth/login" })}
           className="w-full text-xs text-gray-500 hover:text-red-600 py-1.5 rounded-lg hover:bg-gray-50 transition text-left px-2"
         >
-          ğŸšª Ã‡Ä±kÄ±ÅŸ Yap
+          Cikis Yap
         </button>
       </div>
     </>
@@ -176,7 +177,7 @@ export function AppLayout({ children, backHref, backLabel }: {
             </button>
           )}
 
-          {/* Breadcrumb / page title */}
+          {/* Page title */}
           {!backHref && (
             <span className="text-sm text-gray-400">
               {NAV_ITEMS.find(n => pathname.startsWith(n.href))?.label ?? "PawGuide AI"}

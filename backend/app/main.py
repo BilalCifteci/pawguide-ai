@@ -8,8 +8,9 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.logging import setup_logging
-from app.db.session import engine
+from app.db.session import engine, get_db
 from app.db.base import Base
+from app.db.seed_foods import seed_food_products
 
 setup_logging()
 
@@ -23,6 +24,10 @@ async def lifespan(app: FastAPI):
     if settings.ENVIRONMENT == "development":
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+    # Seed food products
+    async for db in get_db():
+        await seed_food_products(db)
+        break
     yield
     # Shutdown
     await engine.dispose()

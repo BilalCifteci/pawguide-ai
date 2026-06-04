@@ -51,6 +51,8 @@ export const nutritionApi = {
     apiClient.get(`/nutrition/requirements/${petId}`),
   scoreFood: (data: unknown) => apiClient.post("/nutrition/score-food", data),
   getPlans: (petId: string) => apiClient.get(`/nutrition/plans/${petId}`),
+  getRecommendations: (petId: string) =>
+    apiClient.get(`/nutrition/recommend/${petId}`),
 };
 
 export const analyticsApi = {

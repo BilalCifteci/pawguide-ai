@@ -102,6 +102,26 @@ class WeightLogResponse(BaseModel):
 
 # ─── Nutrition ────────────────────────────────────────────
 
+class FoodRecommendationResponse(BaseModel):
+    id: uuid.UUID
+    name: str
+    brand: str
+    species: str
+    calories_kcal: float
+    protein_g: float
+    fat_g: float
+    fiber_g: float | None
+    allergens: str | None
+    ingredients: str | None
+    is_verified: bool
+    overall_score: float
+    has_allergen: bool
+    calorie_coverage_percent: float
+    protein_coverage_percent: float
+
+    model_config = {"from_attributes": True}
+
+
 class NutritionRequirementsResponse(BaseModel):
     pet_id: uuid.UUID
     daily_calories_kcal: float
