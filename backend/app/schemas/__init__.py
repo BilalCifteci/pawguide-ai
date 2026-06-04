@@ -170,6 +170,37 @@ class NutritionPlanResponse(BaseModel):
 
 # ─── Analytics ────────────────────────────────────────────
 
+class WeightTrendResponse(BaseModel):
+    direction: str
+    rate_per_week: float
+    on_track: bool
+    message: str
+
+
+class DietAnalysisResponse(BaseModel):
+    status: str
+    status_label: str
+    status_color: str
+    bcs_score: int
+    bcs_description: str
+    current_weight: float
+    ideal_weight: float
+    ideal_weight_min: float
+    ideal_weight_max: float
+    weight_to_lose: float
+    weight_percent_diff: float
+    daily_calories_maintenance: int
+    daily_calories_target: int
+    calorie_adjustment: int
+    weekly_weight_change_target: float
+    weeks_to_goal: int
+    trend: WeightTrendResponse | None
+    summary: str
+    phase: str
+    meal_frequency: int
+    recommendations: list[str]
+
+
 class HealthAlertResponse(BaseModel):
     severity: str
     category: str

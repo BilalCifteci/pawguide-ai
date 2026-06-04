@@ -62,6 +62,8 @@ export const analyticsApi = {
     apiClient.get(`/analytics/health-alerts/${petId}`),
   getSummary: (petId: string) =>
     apiClient.get(`/analytics/summary/${petId}`),
+  getDietAnalysis: (petId: string) =>
+    apiClient.get(`/analytics/diet/${petId}`),
 };
 
 export const supplyChainApi = {

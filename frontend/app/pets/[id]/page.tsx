@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { petsApi, nutritionApi, analyticsApi } from "@/lib/api";
 import { WeightChart } from "@/components/WeightChart";
 import { AlertBanner } from "@/components/AlertBanner";
+import { DietCard } from "@/components/DietCard";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/AppLayout";
@@ -94,6 +95,11 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
           {/* Weight Chart */}
           <div className="lg:col-span-2">
             <WeightChart petId={petId} />
+          </div>
+
+          {/* Diet Analysis */}
+          <div className="lg:col-span-2">
+            <DietCard petId={petId} petName={pet.name} />
           </div>
 
           {/* Log weight form */}
