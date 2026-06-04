@@ -9,7 +9,7 @@ import { useState } from "react";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Ana Sayfa", icon: "🏠" },
-  { href: "/nutrition", label: "Mama Onerileri", icon: "🍽️" },
+  { href: "/nutrition", label: "Mamalar", icon: "🍽️" },
   { href: "/supply-chain", label: "Urun Dogrula", icon: "📦" },
   { href: "/subscription", label: "Abonelik", icon: "🔄" },
 ];
